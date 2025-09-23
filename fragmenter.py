@@ -155,24 +155,23 @@ class fragmenter:
                 raise ValueError(
                     "n_atoms_cuttoff needs to be specified for complete or combined algorithms."
                 )
-            if algorithm == "combined":
-                if function_to_choose_fragmentation == False:
-                    raise ValueError(
-                        "function_to_choose_fragmentation needs to be specified for complete or combined algorithms."
-                    )
+            if function_to_choose_fragmentation == False:
+                raise ValueError(
+                    "function_to_choose_fragmentation needs to be specified for complete or combined algorithms."
+                )
 
-                if not callable(function_to_choose_fragmentation):
+            if not callable(function_to_choose_fragmentation):
+                raise TypeError(
+                    "function_to_choose_fragmentation needs to be a function."
+                )
+            else:
+                if type(function_to_choose_fragmentation([{}, {}])) not in [
+                    dict,
+                    list,
+                ]:
                     raise TypeError(
-                        "function_to_choose_fragmentation needs to be a function."
+                        "function_to_choose_fragmentation needs to take a list of fragmentations and return one fragmentation or a list of fragmentations."
                     )
-                else:
-                    if type(function_to_choose_fragmentation([{}, {}])) not in [
-                        dict,
-                        list,
-                    ]:
-                        raise TypeError(
-                            "function_to_choose_fragmentation needs to take a list of fragmentations and return one fragmentation or a list of fragmentations."
-                        )
 
             if n_max_fragmentations_to_find != -1:
                 if n_max_fragmentations_to_find < 1:
@@ -387,7 +386,7 @@ class fragmenter:
                 mol, canonical_SMILES
             )
 
-            if success and self.algorithm == "combined":
+            if success:
                 fragmentation = self.function_to_choose_fragmentation(fragmentations)
 
         return fragmentation, success
