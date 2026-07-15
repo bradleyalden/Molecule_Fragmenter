@@ -1,7 +1,0 @@
-"id","smiles","notes"
-200000,CCO,Super basic test
-39526,O=C1CCc2cc(O)ccc2N1,except as above check
-14890,CC1(O)CCCCCCCC1,incorrectly said C-O
-3841,COc1cc(C(=O)O)ccc1[N+](=O)[O-],charged molecule
-7827,C1CCOCC1,cyclic O
-945,O=P(Oc1ccccc1)(Oc1ccccc1)Oc1ccccc1,testing aC-PO4

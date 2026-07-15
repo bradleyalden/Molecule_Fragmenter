@@ -8,10 +8,4 @@ Mar Gan Groups/
 csvs/*
 !csvs/smilesTest.csv
 
-add_trcids.py
-check_C2H2O_group.py
-check_if_same_text.py
-get_names.py
-check_numbers_in_lines.py
-make_list_of_groups.py
-Unifac_checker.py
+helpers.py
