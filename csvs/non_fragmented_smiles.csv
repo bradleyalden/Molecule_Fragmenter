@@ -1,0 +1,48 @@
+"trcid","chname","prflag","smiles","nmid"
+19458,"1-hexyl-3-methyl-4-(dimethylamino)pyridinium",1,"CCCCCC[n+]1ccc(N(C)C)c(C)c1",53568
+19459,"salicylate",1,"O=C([O-])c1ccccc1O",53569
+19833,"4-(1-(3-chloropropoxy)ethyl)-N,N-dimethylaniline",1,"CC(OCCCCl)c1ccc(N(C)C)cc1",54290
+19836,"2-chloro-N-(2-chloroethyl)-N-methylethanamine",1,"CN(CCCl)CCCl",54295
+19838,"carbonic acid",1,"O=C(O)O",54301
+19840,"N,N-dimethyl-4-(1-(prop-2-yn-1-yloxy)ethyl)aniline",1,"C#CCOC(C)c1ccc(N(C)C)cc1",54305
+19849,"10-(3-(4-methylpiperazin-1-yl)propyl)-2-(trifluoromethyl)-10H-phenothiazine",1,"CN1CCN(CCCN2c3ccccc3Sc3ccc(C(F)(F)F)cc32)CC1",54317
+22899,"1,2-Anhydro-3,4,5,6,-alloinositol tetranitrate",1,"O=[N+]([O-])OC1C2OC2C(O[N+](=O)[O-])C(O[N+](=O)[O-])C1O[N+](=O)[O-]",60774
+22900,"1,3,7,9-tetranitrobenzotriazolo[2,1-a]benzotriazole",1,"O=[N+]([O-])c1cc([N+](=O)[O-])c2[n-][n+]3c4cc([N+](=O)[O-])cc([N+](=O)[O-])c4nn3c2c1",60778
+22901,"b-trichloroborazine",1,"ClB1NB(Cl)NB(Cl)N1",60780
+22902,"D-mannosaccharic acid",1,"O=C1O[C@@H]2[C@H](O)C(=O)O[C@@H]2[C@@H]1O",60781
+22903,"diamantanone",1,"O=C1C2CC3C4CC5CC3C1C(C5)C4C2",60782
+22904,"3-diamantanol",1,"OC1C2CC3C4CC5CC3C1C(C5)C4C2",60783
+22905,"4-hydroxydiamantane",1,"OC12CC3C4CC5CC3C(C1)C(C5)C4C2",60787
+22906,"4-(1-ethyl-1-methylpropyl)phenol",1,"CCC(C)(CC)c1ccc(O)cc1",60788
+22907,"[1S-(1.alpha.,2.beta.,6,beta.,9.beta.)]-2,6-dimethyl-9-(1-methylethyl)bicyclo[4.4.0]decane",1,"CC(C)[C@@H]1CC[C@@]2(C)CCC[C@H](C)[C@@H]2C1",60793
+22909,"pentacyclo[4.2.0.02,5.03,8.04,7]octane-1,4-dicarboxylic acid",1,"O=C(O)C12C3C4C1C1C2C3C41C(=O)O",60797
+22910,"1-methyl-1-ethenylsilacyclobutane",1,"C=C[Si]1(C)CCC1",60802
+22911,"2,2'-[[3-methyl-4-(phenylazo)phenyl]imino]bisethanol",1,"Cc1cc(N(CCO)CCO)ccc1N=Nc1ccccc1",60804
+22915,"1,4-diheptylbenzene",1,"CCCCCCCc1ccc(CCCCCCC)cc1",60817
+22916,"1,4-dinonylbenzene",1,"CCCCCCCCCc1ccc(CCCCCCCCC)cc1",60819
+22917,"4-ethoxy-N-[[4-(pentyloxy)phenyl]methylene]benzenamine",1,"CCCCCOc1ccc(C=Nc2ccc(OCC)cc2)cc1",60823
+22918,"2,2'-[[4-[(2,4-dinitrophenyl)azo]-3-methylphenyl]imino]bisethanol",1,"Cc1cc(N(CCO)CCO)ccc1N=Nc1ccc([N+](=O)[O-])cc1[N+](=O)[O-]",60827
+22919,"ethanol, 2,2'-[[3-chloro-4-[2-(4-nitrophenyl)diazenyl]phenyl]imino]bis-",1,"O=[N+]([O-])c1ccc(N=Nc2ccc(N(CCO)CCO)cc2Cl)cc1",60828
+22920,"3,3-dimethyltricyclo[2.2.1.02,6]heptane",1,"CC1(C)C2CC3C(C2)C31",60831
+22921,"4-bromo-4'-methyl-1,1'-biphenyl",1,"Cc1ccc(-c2ccc(Br)cc2)cc1",60836
+22922,"ethane-1,1-d2",1,"[2H]C([2H])C",60837
+22923,"11-chloro-3,6,9-trioxa-1-undecanol",1,"OCCOCCOCCOCCCl",60840
+22924,"1,4,4a,9a-tetrahydrofluorene",1,"C1=CCC2c3ccccc3CC2C1",60843
+22925,"5-Tetrazolylurethan",1,"CCOC(=O)Nc1nnn[nH]1",60844
+22926,"3-cyano-1-phenylpropan-1-one",1,"N#CCCC(=O)c1ccccc1",60846
+22927,"2,2',4,4'-tetrabromodiphenyl ether",1,"Brc1ccc(Oc2ccc(Br)cc2Br)c(Br)c1",60852
+22928,"dodecanoic acid, 2-[(diethoxyphosphinyl)oxy]ethyl ester",1,"CCCCCCCCCCCC(=O)OCCOP(=O)(OCC)OCC",60853
+22930,"2,2'-(1,4-phenylene)bis-1,3-dioxolane",1,"c1cc(C2OCCO2)ccc1C1OCCO1",60858
+22932,"4-(2-chlorophenylhydraxone)-3-methyl-5-isoxazolone",1,"CC1=NOC(=O)/C1=N\Nc1ccccc1Cl",60861
+22933,"dihydrosterculic acid",1,"CCCCCCCCC1CC1CCCCCCCC(=O)O",60862
+22935,"patchouli alcohol",1,"C[C@H]1CC[C@@]2(O)C(C)(C)[C@@H]3CC[C@@]2(C)[C@H]1C3",60865
+22936,"1,2-dinitrate-1,2-decanediol",1,"CCCCCCCCC(O)(O[N+](=O)[O-])C(O)O[N+](=O)[O-]",60866
+22938,"(-)-(R)-1,3-butanediol",1,"C[C@@H](O)CCO",60869
+22939,"1-phenyl-2-(2,4,6-trinitrophenyl)-hydrazine",1,"O=[N+]([O-])c1cc([N+](=O)[O-])c(NNc2ccccc2)c([N+](=O)[O-])c1",60872
+22940,"disperse yellow 7",1,"Cc1cc(/N=N/c2ccc(/N=N/c3ccccc3)cc2)ccc1O",60874
+22942,"l-carvone",1,"C=C(C)[C@@H]1CC=C(C)C(=O)C1",60883
+22943,"propane, 2,2-[ethylidenebis(thio)]bis",1,"CC(C)SC(C)SC(C)C",60884
+22944,"N-Serylserine",1,"N[C@@H](CO)C(=O)N[C@@H](CO)C(=O)O",60885
+22946,"11-phenyl-10-heneicosene",1,"CCCCCCCCCC=C(CCCCCCCCCC)c1ccccc1",60890
+22947,"2,2',4,4',5,5'-hexabromodiphenyl ether",1,"Brc1cc(Br)c(Oc2cc(Br)c(Br)cc2Br)cc1Br",60891
+22948,"3-isopropyl-1,2,3-oxadiazol-3-ium-5-olate",1,"CC(C)[n+]1cc([O-])on1",60892

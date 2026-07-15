@@ -1,3 +1,9 @@
+execute_fragmentation_py finds groups using subgroups taken from SMARTS_LIST
+
+input is a .csv file with columns "id" and "smiles"
+
+output is a non-sorted and a sorted .txt file of id and output groups (subgroup occurrences followed by subgroup id in ascending order), space separated
+
 # fragmentation_algorithm (new version)
 ![Algorithm for automatically fragmenting molecules into predefined groups](graphical%20abstract2_white_bg.png)
 - This algorithm allows fragmenting molecules in an automatic manner based on groups defined as SMARTS.

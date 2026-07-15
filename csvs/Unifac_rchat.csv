@@ -1,0 +1,109 @@
+Main Group,Secondary Group,Name,Volume (R),Surface Area (Q),Sample Assignments
+1,1,CH3,0.9011,0.848,Hexane; 2-Methylpropane; Neopentane; 2,2,4-Trimethylpentane
+1,2,CH2,0.6744,0.540,Hexane; 2-Methylpropane; 2,2,4-Trimethylpentane
+1,3,CH,0.4469,0.228,2-Methylpropane; Neopentane; 2,2,4-Trimethylpentane
+1,4,C,0.2195,0.000,Neopentane; 2,2,4-Trimethylpentane
+2,5,CH2=CH,1.3454,1.176,3-Methyl-1-hexene; Hexene-2; 2-Methyl-1-butene; 2-Methyl-2-butene
+2,6,CH=CH,1.1167,0.867,3-Methyl-1-hexene; Hexene-2; 2-Methyl-1-butene; 2-Methyl-2-butene
+2,7,CH2=C,1.1173,0.988,3-Methyl-1-hexene; Hexene-2; 2-Methyl-2-butene
+2,8,CH=C,0.8886,0.676,3-Methyl-1-hexene; Hexene-2; 2-Methyl-1-butene; 2-Methyl-2-butene
+3,9,ACH,0.5313,0.400,Benzene; Styrene
+3,10,AC,0.3652,0.120,Styrene
+4,11,ACCH3,1.2663,0.968,Toluene
+4,12,ACCH2,1.0396,0.660,Ethylbenzene
+4,13,ACCH,0.8121,0.348,Cumene
+5,14,OH,1.0000,1.200,Ethanol
+61,15,CH3OH,1.4311,1.432,Methanol
+71,16,H2O,0.9200,1.400,Water
+8,17,ACOH,0.8952,0.680,Phenol
+9,18,CH3CO,1.6724,1.488,Methylethylketone
+9,19,CH2CO,1.4457,1.180,Ethylphenylketone
+10,20,CH=O,0.9980,0.948,Hexanal
+11,21,CH3COO,1.9031,1.728,Butyl acetate
+11,22,CH2COO,1.6764,1.420,Methyl propionate
+12,23,HCOO,1.2420,1.188,Ethyl formate
+13,24,CH3O,1.1450,1.088,Dimethyl ether
+13,25,CH2O,0.9183,0.780,Diethyl ether
+13,26,CHO,0.6908,0.468,Diisopropyl ether
+13,27,THF,0.9183,1.100,Tetrahydrofuran
+14,28,CH3NH2,1.5959,1.544,Methylamine
+14,29,CH2NH2,1.3692,1.236,Ethylamine
+14,30,CHNH2,1.1417,0.924,Isopropylamine
+15,31,CH3NH,1.4337,1.244,Dimethyl amine
+15,32,CH2NH,1.2070,0.936,Diethylamine
+15,33,CHNH,0.9795,0.624,Diisopropylamine
+16,34,CH3N,1.1865,0.940,Trimethylamine
+16,35,CH2N,0.9597,0.632,Triethylamine
+17,36,ACNH2,1.0600,0.816,Aniline
+18,37,C5H5N,2.9993,2.113,Pyridine
+18,38,C5H4N,2.8332,1.833,2-Methylpyridine
+18,39,C5H3N,2.6670,1.553,2,3-Dimethylpyridine
+19,40,CH3CN,1.8701,1.724,Acetonitrile
+19,41,CH2CN,1.6434,1.416,Proprionitrile
+20,42,COOH,1.3013,1.224,Acetic Acid
+20,43,HCOOH,1.5280,1.532,Formic Acid
+21,44,CH2Cl,1.4654,1.264,1-Chlorobutane
+21,45,CHCl,1.2380,0.952,2-Chloropropane
+21,46,CCl,1.0106,0.724,2-Chloro-2-methylpropane
+22,47,CH2Cl2,2.2564,1.988,Dichloromethane
+22,48,CHCl2,2.0606,1.684,1,1-Dichloroethane
+22,49,CCl2,1.8016,1.448,2,2-Dichloropropane
+23,50,CHCl3,2.8700,2.410,Chloroform
+23,51,CCl3,2.6401,2.184,1,1,1-Trichloroethane
+24,52,CCl4,3.3900,2.910,Tetrachloromethane
+25,53,ACCl,1.1562,0.844,Chlorobenzene
+26,54,CH3NO2,2.0086,1.868,Nitromethane
+26,55,CH2NO2,1.7818,1.560,Nitroethane
+26,56,CHNO2,1.5544,1.248,2-Nitropropane
+27,57,ACNO2,1.4199,1.104,Nitrobenzene
+28,58,CS2,2.5070,1.650,Carbon disulfide
+29,59,CH3SH,1.8770,1.676,Methanethiol
+29,60,CH2SH,1.6510,1.368,Ethanethiol
+30,61,Furfural,3.1680,2.484,Furfural
+31,62,DOH,2.4088,2.248,1,2-Ethanediol
+32,63,I,1.2640,0.992,Iodoethane
+33,64,Br,0.9492,0.832,Bromoethane
+34,65,CH#C,1.2929,1.088,1-Hexyne
+34,66,C#C,1.0613,0.784,2-Hexyne
+35,67,DMSO,2.8266,2.472,Dimethylsulfoxide
+36,68,Acrylonitrile,2.3144,2.052,Acrylonitrile
+37,69,Cl(C=C),0.7910,0.724,Trichloroethylene
+2,70,C=C,0.6605,0.485,2,3-Dimethylbutene
+38,71,ACF,0.6948,0.524,Fluorobenzene
+39,72,DMF,3.0856,2.736,N,N-Dimethylformamide
+39,73,HCON(CH2)2,2.6322,2.120,N,N-Diethylformamide
+40,74,CF3,1.4060,1.380,Perfluoroethane
+40,75,CF2,1.0105,0.920,Perfluoromethylcyclohexane
+40,76,CF,0.6150,0.460,Perfluoromethylcyclohexane
+41,77,COO,1.3800,1.200,Butylacetate
+42,78,SiH3,1.6035,1.263,Methylsilane
+42,79,SiH2,1.4443,1.006,Diethylsilane
+42,80,SiH,1.2853,0.749,Trimethylsilane
+42,81,Si,1.0470,0.410,Tetramethylsilane
+43,82,SiH2O,1.4838,1.062,Hexamethyldisiloxane
+43,83,SiHO,1.3030,0.764,Hexamethyldisiloxane
+43,84,SiO,1.1044,0.466,Hexamethyldisiloxane
+44,85,NMP,3.9810,3.200,N-Methylpyrrolidone
+45,86,CCl3F,3.0356,2.644,Trichlorofluoromethane
+45,87,CCl2F,2.2287,1.916,Tetrachloro-1,2-difluoroethane
+45,88,HCCl2F,2.4060,2.116,Dichlorofluoromethane
+45,89,HCClF,1.6493,1.416,2-Chloro-2-fluoroethane
+45,90,CClF2,1.8174,1.648,2-Chloro-2,2-difluoroethane
+45,91,HCClF2,1.9670,1.828,Chlorodifluoromethane
+45,92,CClF3,2.1721,2.100,Chlorotrifluoromethane
+45,93,CCl2F2,2.6243,2.376,Dichlorodifluoromethane
+46,94,CONH2,1.4515,1.248,Acetamide
+46,95,CONHCH3,2.1905,1.796,N-Methylacetamide
+46,96,CONHCH2,1.9637,1.488,N-Ethylacetamide
+46,97,CON(CH3)2,2.8589,2.428,N,N-Dimethylacetamide
+46,98,CONCH3CH2,2.6322,2.120,N,N-Methylethylacetamide
+46,99,CON(CH2)2,2.4054,1.812,N,N-Diethylacetamide
+47,100,C2H5O2,2.1226,1.904,2-Ethoxyethanol
+47,101,C2H4O2,1.8952,1.592,2-Ethoxy-1-propanol
+48,102,CH3S,1.6130,1.368,Dimethylsulfide
+48,103,CH2S,1.3863,1.060,Diethylsulfide
+48,104,CHS,1.1589,0.748,Diisopropylsulfide
+49,105,MORPH,3.4740,2.796,Morpholine
+50,106,C4H4S,2.8569,2.140,Thiophene
+50,107,C4H3S,2.6908,1.860,2-Methylthiophene
+50,108,C4H2S,2.5247,1.580,2,3-Dimethylthiophene
