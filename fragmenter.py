@@ -22,7 +22,7 @@ class fragmenter:
     import marshal as marshal
     from rdkit.Chem import rdmolops
     import warnings
-    from SMARTS_MARGAN import MARGAN
+    from SMARTS_MARGAN_GEM import MARGAN
 
     @staticmethod
     def deep_copy(obj):

@@ -7,12 +7,14 @@ from fragmenter import fragmenter
 import csv
 import SMARTS
 import SMARTS_MARGAN
+import SMARTS_MARGAN_GEM
 import SMARTS_TDE
 import sort_list
 
 # choose which method to use
 # SMARTS_LIST = SMARTS.UNIFAC.copy()
-SMARTS_LIST = SMARTS_MARGAN.MARGAN.copy()
+# SMARTS_LIST = SMARTS_MARGAN.MARGAN.copy()
+SMARTS_LIST = SMARTS_MARGAN_GEM.MARGAN.copy()
 # SMARTS_LIST = SMARTS_TDE.UNIFAC.copy()
 
 # get the fragmentation scheme in the format necessary

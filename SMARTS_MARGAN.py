@@ -1,4 +1,4 @@
-# SMARTS strings must be syntactically correct and use recursive smarts ($ to specify connections to parts that aren't group). Number of Hs and charges are taken literally from smarts strings, so if not no Hs or charge of 0, the smarts must include that.
+# SMARTS strings must be syntactically correct and #Idk if this is right: use recursive smarts ($ to specify connections to parts that aren't group). Number of Hs and charges are taken literally from smarts strings, so if not no Hs or charge of 0, the smarts must include that.
 MARGAN = [
 ("CH3", "[CX4H3]"),
 ("CH2", "[CX4H2]"),
