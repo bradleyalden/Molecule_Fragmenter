@@ -1,3 +1,18 @@
+RDKIT_METHOD_MAP = {
+    "GetTotalNumHs": (
+        lambda query_atom: int(query_atom.DescribeQuery().split("AtomHCount")[1][1]) if "AtomHCount" in query_atom.DescribeQuery() else 0,
+        lambda atom: atom.GetTotalNumHs()
+    ),
+    "GetFormalCharge": (
+        lambda query_atom: int(query_atom.DescribeQuery().split("FormalCharge")[1].replace("=", "").replace(")", "").replace("]", "").split()[0]) if "FormalCharge" in query_atom.DescribeQuery() else 0,
+        lambda atom: atom.GetFormalCharge()
+    ),
+    "IsInRing": (
+        lambda query_atom: True if "AtomInNRings" in query_atom.DescribeQuery() or query_atom.GetIsAromatic() else False,
+        lambda atom: atom.IsInRing()
+    ),
+}
+
 class fragmenter:
     """Class for fragmenting molecules based on predefined SMARTS patterns and algorithms.
 
@@ -51,7 +66,7 @@ class fragmenter:
         """
         return sum(atom.GetAtomicNum() != 1 for atom in mol.GetAtoms())
 
-    def verify_smarts_specifications(self, mol, fragmentation_match):
+    def verify_given_specifications(self, mol, fragmentation_match):
         """
         Verifies that the specifications (such as hydrogens, charges, and rings) in the SMARTS patterns 
         match the actual atoms in the molecule.
@@ -61,29 +76,44 @@ class fragmenter:
             fragmentation_match: (dict) matching SMARTS to list of match tuples
         
         Returns:
-            boolean: True if the hydrogens in the SMARTS string match those in the molecule
+            boolean: True if the specifications in the SMARTS string match those in the molecule
         """
         for smarts, locations in fragmentation_match.items():
-            required_h_counts = self._fragmentation_scheme_h_count_lookup[smarts]
-            required_charge_counts = self._fragmentation_scheme_charge_lookup[smarts]
-            required_ring_status = self._fragmentation_scheme_ring_lookup[smarts]
-            
-            for location in locations:
-                for i, atom_idx in enumerate(location):
-                    actual_atom = mol.GetAtomWithIdx(atom_idx)
-                    
-                    # 1. Check Hydrogens
-                    if actual_atom.GetTotalNumHs() != required_h_counts[i]:
-                        return False 
-                        
-                    # 2. Check Formal Charge
-                    if actual_atom.GetFormalCharge() != required_charge_counts[i]:
-                        return False
-                    # 3. Check Ring Status
-                    if actual_atom.IsInRing() and not required_ring_status[i]:
-                        return False
-                        
+            specifications = self.specifications_lookup[smarts]
+            for instance in locations:
+                for smarts_index, atom_loc in enumerate(instance):
+                    for property, atoms_list in specifications.items():
+                        if self.active_checks[property][1](mol.GetAtomWithIdx(atom_loc)) != atoms_list[smarts_index]:
+                            return False
         return True
+
+    def make_specifications_lookup(self):
+        """
+        Generates a reference dict mapping each atom in each SMARTS group to the given specifications
+        
+        Args:
+            none
+        
+        Returns:
+            lookup: {Dict of smarts strings: {Dict of properties to match: [list of atom property values]}}
+        """
+        lookup = {}
+        for smarts in self.fragmentation_scheme.values():
+            # fix to actually work if smarts is a list
+            if not isinstance(smarts, list):
+                smarts = [smarts]
+            for smarts_str in smarts:
+                smarts_dict = {}
+                smarts_mol = fragmenter.Chem.MolFromSmarts(smarts_str)
+                if not smarts_mol:
+                    continue
+                for prop, prop_function in self.active_checks.items():
+                    atoms_list = []
+                    for atom in smarts_mol.GetAtoms():
+                        atoms_list.append(prop_function[0](atom))
+                    smarts_dict[prop] = atoms_list
+                lookup[smarts_str] = smarts_dict
+        return lookup
 
     def get_substruct_matches(
         self,
@@ -143,6 +173,7 @@ class fragmenter:
         n_max_fragmentations_to_find=-1,
         reject_fragmented_molecules = False,
         reject_charged_molecules = False,
+        properties_to_match = []
     ):
         """Initialize the fragmenter with a fragmentation scheme and algorithm parameters.
 
@@ -242,7 +273,7 @@ class fragmenter:
                         if h_match:
                             weight += h_match * 1.008
 
-                is_urea = 1 if ("urea" in group_name.lower() or any(sub in group_name for sub in ["NCON", "NHCON", "NH2CON"])) else 0
+                is_urea = 1 if any(sub in group_name for sub in ["NCON", "NHCON", "NH2CON"]) else 0
                 
                 is_ac_r = 1 if group_name.startswith("aC-") else 0
                 
@@ -304,59 +335,24 @@ class fragmenter:
         # create lookup dictionaries to faster finding a group number
         self._fragmentation_scheme_group_number_lookup = {}
         self._fragmentation_scheme_pattern_lookup = {}
-        self._fragmentation_scheme_h_count_lookup = {}
-        self._fragmentation_scheme_charge_lookup = {}
-        self._fragmentation_scheme_ring_lookup = {}
         self.fragmentation_scheme_order = fragmentation_scheme_order
         self._adjacency_matrix_cache = {}
 
-        for i, (group_name, list_SMARTS) in enumerate(fragmentation_scheme.items()):
+        self.active_checks = {prop: RDKIT_METHOD_MAP[prop] for prop in properties_to_match if prop in RDKIT_METHOD_MAP}
+        self.specifications_lookup = self.make_specifications_lookup()
 
+        # add data from smarts to lookups
+        for group_num, list_SMARTS in fragmentation_scheme.items():
             if type(list_SMARTS) is not list:
                 list_SMARTS = [list_SMARTS]
-
-            for SMARTS in list_SMARTS:
-                if SMARTS != "":
-                    self._fragmentation_scheme_group_number_lookup[SMARTS] = (
-                        group_name # changes how group numbers/names are printed ex 1 vs CH3
+            for smarts_str in list_SMARTS:
+                if smarts_str != "":
+                    self._fragmentation_scheme_group_number_lookup[smarts_str] = (
+                        group_num
                     )
 
-                    mol_SMARTS = fragmenter.Chem.MolFromSmarts(SMARTS)
-                    self._fragmentation_scheme_pattern_lookup[SMARTS] = mol_SMARTS
-
-                    h_counts = []
-                    charge_counts = []
-                    ring_requirements = []
-                    
-                    for atom in mol_SMARTS.GetAtoms():
-                        query = atom.DescribeQuery()
-                        
-                        # 1. Parse Hydrogens
-                        if "AtomHCount" in query:
-                            req_h = int(query.split("AtomHCount")[1][1])
-                            h_counts.append(req_h)
-                        else:
-                            h_counts.append(0) 
-                            
-                        # 2. Parse Formal Charge
-                        if "FormalCharge" in query:
-                            charge_str = query.split("FormalCharge")[1].replace("=", "").replace(")", "").replace("]", "").split()[0]
-                            req_charge = int(charge_str)
-                            charge_counts.append(req_charge)
-                        else:
-                            charge_counts.append(0)
-
-                        # 3. Parse Ring Status
-                        # print("HERES A QUERY: " + SMARTS)
-                        # print(query)
-                        if "AtomInNRings" in query or atom.GetIsAromatic():
-                            ring_requirements.append(True)
-                        else:
-                            ring_requirements.append(False)
-
-                    self._fragmentation_scheme_h_count_lookup[SMARTS] = h_counts
-                    self._fragmentation_scheme_charge_lookup[SMARTS] = charge_counts
-                    self._fragmentation_scheme_ring_lookup[SMARTS] = ring_requirements
+                    mol_SMARTS = fragmenter.Chem.MolFromSmarts(smarts_str)
+                    self._fragmentation_scheme_pattern_lookup[smarts_str] = mol_SMARTS
 
     def fragment(self, SMILES_or_molecule):
         """Fragment a molecule using the configured fragmentation scheme and algorithm.
@@ -942,8 +938,8 @@ class fragmenter:
                         )
                         if not all_atoms_are_unassigned:
                             continue
-                        
-                        if not self.verify_smarts_specifications(mol_searched_in, {SMARTS: [match]}):
+
+                        if not self.verify_given_specifications(mol_searched_in,{SMARTS: [match]}):
                             continue
                         
                         # only allow matches that do not contain groups leading to incomplete matches

@@ -19,9 +19,12 @@ SMARTS_LIST = SMARTS_MARGAN_GEM.MARGAN.copy()
 
 # get the fragmentation scheme in the format necessary
 fragmentation_scheme = {i+1: j[1] for i, j in enumerate(SMARTS_LIST)}
-# fragmentation_scheme = {j[0]: j[1] for j in SMARTS_LIST}
-
 def function_to_choose_fragmentation(fragmentations):
+    """
+        Selects a fragmentation from a list of fragmentation for Marrero-Gani method
+        checks to ensure fragmentations have used non-split groups where applicable
+        selects the fragmentation with the heaviest single group
+    """
     best_fragmentation = None
     best_score = None
     
@@ -43,7 +46,7 @@ def function_to_choose_fragmentation(fragmentations):
             total_groups += num_matches
             
             name = group_names[smarts]
-            if "urea" in name.lower() or any(sub in name for sub in ["NCON", "NHCON", "NH2CON"]):
+            if any(sub in name for sub in ["NCON", "NHCON", "NH2CON"]):
                 urea_count += num_matches
             if name.startswith("aC-"):
                 ac_r_count += num_matches
@@ -111,6 +114,7 @@ frg = fragmenter(
     match_hydrogens=False,
     n_max_fragmentations_to_find=400,
     reject_fragmented_molecules=True,
+    properties_to_match=["GetTotalNumHs", "GetFormalCharge", "IsInRing"]
     )
 smiles_length = len(smiles)
 
