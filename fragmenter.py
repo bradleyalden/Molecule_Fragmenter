@@ -37,7 +37,6 @@ class fragmenter:
     import marshal as marshal
     from rdkit.Chem import rdmolops
     import warnings
-    from SMARTS_MARGAN_GEM import MARGAN
 
     @staticmethod
     def deep_copy(obj):
@@ -149,12 +148,12 @@ class fragmenter:
             return list(matches)
 
         valid_matches = []
-        adjancency_matrix = self.get_adjacency_matrix(
+        adjacency_matrix = self.get_adjacency_matrix(
             mol_searched_in, canonical_SMILES_searched_in
         )
         for match in matches:
             for i in match:
-                if adjancency_matrix[i].intersection(
+                if adjacency_matrix[i].intersection(
                     atom_indices_to_which_new_matches_have_to_be_adjacent
                 ):
                     valid_matches.append(match)
@@ -248,71 +247,31 @@ class fragmenter:
                     )
 
         if fragmentation_scheme_order is None:
-
+            # create automagic fragmentation_scheme_order from sizes of groups from largest to smallest and specificity of SMARTS
             scheme_descriptors = []
-            smarts_to_name = {
-                s: name 
-                for name, smarts in fragmenter.MARGAN 
-                for s in (smarts if isinstance(smarts, list) else [smarts])
-            }
-        
-            for group_id, SMARTS in fragmentation_scheme.items():
+            for i, SMARTS in fragmentation_scheme.items():
                 if isinstance(SMARTS, list):
                     SMARTS = SMARTS[0]
                 mol_SMARTS = fragmenter.Chem.MolFromSmarts(SMARTS)
-                group_name = smarts_to_name[SMARTS]
-                weight = 0.0
-                if mol_SMARTS:
-                    for atom in mol_SMARTS.GetAtoms():
-                        weight += atom.GetMass()
-                        query = atom.DescribeQuery()
-                        if "AtomHCount" in query:
-                            h_match = int(query.split("AtomHCount")[1][1])
-                        else:
-                            h_match = 0
-                        if h_match:
-                            weight += h_match * 1.008
+                n_atoms_SMARTS = 0
+                for atom in mol_SMARTS.GetAtoms():
+                    try:
+                        n_atoms_SMARTS += 1
+                        atom_query = atom.DescribeQuery()
+                        if "AtomHCount" not in atom_query:
+                            continue
+                        n_Hs = int(atom_query.split("AtomHCount")[1].split("=")[0])
+                        n_atoms_SMARTS += n_Hs
+                    except Exception:
+                        pass
+                scheme_descriptors.append((i, n_atoms_SMARTS, len(SMARTS)))
 
-                is_urea = 1 if any(sub in group_name for sub in ["NCON", "NHCON", "NH2CON"]) else 0
-                
-                is_ac_r = 1 if group_name.startswith("aC-") else 0
-                
-                scheme_descriptors.append((group_id, is_urea, is_ac_r, weight, len(SMARTS)))
-                
-            # Priority: Ureas > aC-R > Heaviest Weight > Longest SMARTS string
             fragmentation_scheme_order = [
-                i for i, is_urea, is_ac_r, weight, length in sorted(
-                    scheme_descriptors, 
-                    key=lambda x: (x[1], x[2], x[3], x[4]), 
-                    reverse=True
+                i
+                for i, p1, p2 in sorted(
+                    scheme_descriptors, key=lambda x: (x[1], x[2]), reverse=True
                 )
             ]
-
-            # # create automagic fragmentation_scheme_order from sizes of groups from largest to smallest and specificity of SMARTS
-            # scheme_descriptors = []
-            # for i, SMARTS in fragmentation_scheme.items():
-            #     if isinstance(SMARTS, list):
-            #         SMARTS = SMARTS[0]
-            #     mol_SMARTS = fragmenter.Chem.MolFromSmarts(SMARTS)
-            #     n_atoms_SMARTS = 0
-            #     for atom in mol_SMARTS.GetAtoms():
-            #         try:
-            #             n_atoms_SMARTS += 1
-            #             atom_query = atom.DescribeQuery()
-            #             if "AtomHCount" not in atom_query:
-            #                 continue
-            #             n_Hs = int(atom_query.split("AtomHCount")[1].split("=")[0])
-            #             n_atoms_SMARTS += n_Hs
-            #         except Exception:
-            #             pass
-            #     scheme_descriptors.append((i, n_atoms_SMARTS, len(SMARTS)))
-
-            # fragmentation_scheme_order = [
-            #     i
-            #     for i, p1, p2 in sorted(
-            #         scheme_descriptors, key=lambda x: (x[1], x[2]), reverse=True
-            #     )
-            # ]
 
             if algorithm in ["simple", "combined"]:
                 self.warnings.warn(
@@ -338,7 +297,12 @@ class fragmenter:
         self.fragmentation_scheme_order = fragmentation_scheme_order
         self._adjacency_matrix_cache = {}
 
-        self.active_checks = {prop: RDKIT_METHOD_MAP[prop] for prop in properties_to_match if prop in RDKIT_METHOD_MAP}
+        unknown = set(properties_to_match) - set(RDKIT_METHOD_MAP.keys())
+        if unknown:
+            self.warnings.warn(f"Unknown properties ignored: {unknown}.")
+        self.active_checks = {prop: RDKIT_METHOD_MAP[prop] 
+                for prop in properties_to_match 
+                if prop in RDKIT_METHOD_MAP}
         self.specifications_lookup = self.make_specifications_lookup()
 
         # add data from smarts to lookups
@@ -735,14 +699,14 @@ class fragmenter:
         if canonical_SMILES in self._adjacency_matrix_cache:
             return self._adjacency_matrix_cache[canonical_SMILES]
 
-        adjancency_matrix = []
+        adjacency_matrix = []
         for atom in mol.GetAtoms():
-            adjancency_matrix.append(
+            adjacency_matrix.append(
                 {neighbor.GetIdx() for neighbor in atom.GetNeighbors()}
             )
 
-        self._adjacency_matrix_cache[canonical_SMILES] = adjancency_matrix
-        return adjancency_matrix
+        self._adjacency_matrix_cache[canonical_SMILES] = adjacency_matrix
+        return adjacency_matrix
 
     def __clean_molecule_surrounding_unmatched_atoms(
         self,
@@ -788,11 +752,11 @@ class fragmenter:
                             (smart, atoms)
                         )
 
-            adjancency_matrix = self.get_adjacency_matrix(
+            adjacency_matrix = self.get_adjacency_matrix(
                 mol_searched_in, canonical_SMILES_searched_in
             )
             for atom_index in atoms_missing:
-                for neighbor_index in adjancency_matrix[atom_index]:
+                for neighbor_index in adjacency_matrix[atom_index]:
                     if neighbor_index in atom_to_smart_mapping:
                         for smart, atoms in atom_to_smart_mapping[neighbor_index]:
                             if (
@@ -1062,11 +1026,11 @@ class fragmenter:
                     unassignes_atom_indices = set(
                         range(0, target_atom_count)
                     ).difference(atom_indices_included_in_fragmentation_so_far)
-                    adjancency_matrix = self.get_adjacency_matrix(
+                    adjacency_matrix = self.get_adjacency_matrix(
                         mol_searched_in, canonical_SMILES_searched_in
                     )
                     for atom_index in unassignes_atom_indices:
-                        for neighbor_atom_index in adjancency_matrix[atom_index]:
+                        for neighbor_atom_index in adjacency_matrix[atom_index]:
                             for (
                                 found_smarts,
                                 found_matches,

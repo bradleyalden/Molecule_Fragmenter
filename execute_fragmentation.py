@@ -19,6 +19,52 @@ SMARTS_LIST = SMARTS_MARGAN_GEM.MARGAN.copy()
 
 # get the fragmentation scheme in the format necessary
 fragmentation_scheme = {i+1: j[1] for i, j in enumerate(SMARTS_LIST)}
+
+def create_fragmentation_scheme_order():
+    """
+    Creates an order to prioritize fragmentations
+    """
+    scheme_descriptors = []
+    smarts_to_name = {
+        s: name 
+        for name, smarts in SMARTS_LIST 
+        for s in (smarts if isinstance(smarts, list) else [smarts])
+    }
+
+    for group_id, smarts in fragmentation_scheme.items():
+        if isinstance(smarts, list):
+            smarts = smarts[0]
+        mol_SMARTS = fragmenter.Chem.MolFromSmarts(smarts)
+        group_name = smarts_to_name[smarts]
+        weight = 0.0
+        if mol_SMARTS:
+            for atom in mol_SMARTS.GetAtoms():
+                weight += atom.GetMass()
+                query = atom.DescribeQuery()
+                if "AtomHCount" in query:
+                    h_match = int(query.split("AtomHCount")[1][1])
+                else:
+                    h_match = 0
+                if h_match:
+                    weight += h_match * 1.008
+
+        is_urea = 1 if any(sub in group_name for sub in ["NCON", "NHCON", "NH2CON"]) else 0
+        
+        is_ac_r = 1 if group_name.startswith("aC-") else 0
+        
+        scheme_descriptors.append((group_id, is_urea, is_ac_r, weight, len(smarts)))
+        
+    # Priority: Ureas > aC-R > Heaviest Weight > Longest SMARTS string
+    fragmentation_scheme_order = [
+        i for i, is_urea, is_ac_r, weight, length in sorted(
+            scheme_descriptors, 
+            key=lambda x: (x[1], x[2], x[3], x[4]), 
+            reverse=True
+        )
+    ]
+    return fragmentation_scheme_order
+fragmentation_scheme_order = create_fragmentation_scheme_order()
+
 def function_to_choose_fragmentation(fragmentations):
     """
         Selects a fragmentation from a list of fragmentation for Marrero-Gani method
@@ -114,7 +160,8 @@ frg = fragmenter(
     match_hydrogens=False,
     n_max_fragmentations_to_find=400,
     reject_fragmented_molecules=True,
-    properties_to_match=["GetTotalNumHs", "GetFormalCharge", "IsInRing"]
+    properties_to_match=["GetTotalNumHs", "GetFormalCharge", "IsInRing"],
+    fragmentation_scheme_order=fragmentation_scheme_order,
     )
 smiles_length = len(smiles)
 
