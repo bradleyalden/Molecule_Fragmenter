@@ -1,18 +1,3 @@
-RDKIT_METHOD_MAP = {
-    "GetTotalNumHs": (
-        lambda query_atom: int(query_atom.DescribeQuery().split("AtomHCount")[1][1]) if "AtomHCount" in query_atom.DescribeQuery() else 0,
-        lambda atom: atom.GetTotalNumHs()
-    ),
-    "GetFormalCharge": (
-        lambda query_atom: int(query_atom.DescribeQuery().split("FormalCharge")[1].replace("=", "").replace(")", "").replace("]", "").split()[0]) if "FormalCharge" in query_atom.DescribeQuery() else 0,
-        lambda atom: atom.GetFormalCharge()
-    ),
-    "IsInRing": (
-        lambda query_atom: True if "AtomInNRings" in query_atom.DescribeQuery() or query_atom.GetIsAromatic() else False,
-        lambda atom: atom.IsInRing()
-    ),
-}
-
 class fragmenter:
     """Class for fragmenting molecules based on predefined SMARTS patterns and algorithms.
 
@@ -172,7 +157,8 @@ class fragmenter:
         n_max_fragmentations_to_find=-1,
         reject_fragmented_molecules = False,
         reject_charged_molecules = False,
-        properties_to_match = []
+        properties_to_match = [],
+        custom_property_match_functions = {}
     ):
         """Initialize the fragmenter with a fragmentation scheme and algorithm parameters.
 
@@ -275,7 +261,7 @@ class fragmenter:
 
             if algorithm in ["simple", "combined"]:
                 self.warnings.warn(
-                    "No especific fragmentation_scheme_order was given, groups were sorted by group size from largest to smallest, you might get better results if you specify the order in which the groups are searched for."
+                    "No specific fragmentation_scheme_order was given, groups were sorted by group size from largest to smallest, you might get better results if you specify the order in which the groups are searched for."
                 )
 
         self.n_max_fragmentations_to_find = n_max_fragmentations_to_find
@@ -297,12 +283,32 @@ class fragmenter:
         self.fragmentation_scheme_order = fragmentation_scheme_order
         self._adjacency_matrix_cache = {}
 
-        unknown = set(properties_to_match) - set(RDKIT_METHOD_MAP.keys())
+        if properties_to_match == None:
+            self.warnings.warn("No properties to match given")
+
+        self.PROPERTY_MATCH_FUNCTIONS = {
+            "GetTotalNumHs": (
+                lambda query_atom: int(query_atom.DescribeQuery().split("AtomHCount")[1][1]) if "AtomHCount" in query_atom.DescribeQuery() else 0,
+                lambda atom: atom.GetTotalNumHs()
+            ),
+            "GetFormalCharge": (
+                lambda query_atom: int(query_atom.DescribeQuery().split("FormalCharge")[1].replace("=", "").replace(")", "").replace("]", "").split()[0]) if "FormalCharge" in query_atom.DescribeQuery() else 0,
+                lambda atom: atom.GetFormalCharge()
+            ),
+        }
+
+        for property, functions in custom_property_match_functions.items():
+            if not callable(functions[0]) or not callable(functions[1]):
+                raise TypeError(f"Custom property match function must have two callable functions, got {type(functions[0])} and {type(functions[1])}")
+            self.PROPERTY_MATCH_FUNCTIONS[property] = functions
+
+        unknown = set(properties_to_match) - set(self.PROPERTY_MATCH_FUNCTIONS.keys())
         if unknown:
             self.warnings.warn(f"Unknown properties ignored: {unknown}.")
-        self.active_checks = {prop: RDKIT_METHOD_MAP[prop] 
+            
+        self.active_checks = {prop: self.PROPERTY_MATCH_FUNCTIONS[prop] 
                 for prop in properties_to_match 
-                if prop in RDKIT_METHOD_MAP}
+                if prop in self.PROPERTY_MATCH_FUNCTIONS}
         self.specifications_lookup = self.make_specifications_lookup()
 
         # add data from smarts to lookups
@@ -382,7 +388,6 @@ class fragmenter:
                 fragmentation_matches[group_number].extend(matches)
 
             success.append(this_mol_success)
-
 
         return fragmentation, all(success), fragmentation_matches
 
@@ -478,7 +483,6 @@ class fragmenter:
             )
 
             if success:
-                # print(fragmentations)
                 fragmentation = self.function_to_choose_fragmentation(fragmentations)
 
         return fragmentation, success
