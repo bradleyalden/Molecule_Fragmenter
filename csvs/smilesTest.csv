@@ -2,6 +2,11 @@
 200000,CCO,Super basic test
 39526,O=C1CCc2cc(O)ccc2N1,except as above check
 14890,CC1(O)CCCCCCCC1,incorrectly said C-O
-3841,COc1cc(C(=O)O)ccc1[N+](=O)[O-],charged molecule
+3841,COc1cc(C(=O)O)ccc1[N+](=O)[O-],charged molecule also solid example image
 7827,C1CCOCC1,cyclic O
 945,O=P(Oc1ccccc1)(Oc1ccccc1)Oc1ccccc1,testing aC-PO4
+101,CCOC(CC)OCC
+15,C=C1CC(=O)OC1=O
+27,CNC(=O)Oc1ccc(C)c(C)c1
+30,CCCc1ccc(C(=O)O)cc1
+39,[2H]C=C([2H])[2H]
