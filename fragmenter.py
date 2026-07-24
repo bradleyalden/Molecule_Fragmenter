@@ -1142,6 +1142,5 @@ class fragmenter:
 
         return frozenset(match) in found_matches_set
 
-
 if __name__ == "__main__":
     main()

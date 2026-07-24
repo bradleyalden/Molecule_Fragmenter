@@ -9,14 +9,33 @@ import SMARTS
 import sort_list
 
 # choose which method to use
-SMARTS_LIST = SMARTS.UNIFAC_TDE.copy()
+SMARTS_LIST = SMARTS.MARGAN_GEM.copy()
 
-# get the fragmentation scheme in the format necessary
+# this puts the fragmentation scheme in the format necessary
 fragmentation_scheme = {i+1: j[1] for i, j in enumerate(SMARTS_LIST)}
+group_ids_to_names = {i+1: j[0] for i, j in enumerate(SMARTS_LIST)}
+
+# select input/output files
+calculate_from = "csvs\\smilesTest.csv"
+write_to = "group_lists\\fragmented_groups.txt"
+sort_to = "group_lists\\fragmented_groups_sorted.txt"
+# start at desired location in file if desired
+start_offset = 0
+
+# Custom specifiers - {name: (function to check from SMARTS, function to check atom in current molecule)}
+CUSTOM_PROPERTY_MATCH_FUNCTIONS = {
+    "IsInRing": (
+        lambda query_atom: True if "AtomInNRings" in query_atom.DescribeQuery() or query_atom.GetIsAromatic() else False,
+        lambda atom: atom.IsInRing()
+    ),
+}
+
+# Choose which specifiers to use
+properties_to_match = ["GetTotalNumHs", "GetFormalCharge", "IsInRing"]
 
 def create_fragmentation_scheme_order():
     """
-    Creates an order to prioritize fragmentations
+    Creates an order to prioritize fragmentations (mostly to ensure larger groups are checked first)
     """
     scheme_descriptors = []
     smarts_to_name = {
@@ -126,16 +145,9 @@ def function_to_choose_fragmentation_unifac(fragmentations):
     
     # Cache to store SMARTS weights so we don't recalculate them across loops
     weight_cache = {}
-    group_names = {
-        s: name 
-        for name, smarts in SMARTS_LIST 
-        for s in (smarts if isinstance(smarts, list) else [smarts])
-    }
     for frag in fragmentations:
         group_weights = []
         total_groups = 0
-        urea_count = 0
-        ac_r_count = 0
         
         for smarts, matches in frag.items():
             num_matches = len(matches)
@@ -177,20 +189,14 @@ def function_to_choose_fragmentation_simple(fragmentations):
 
     return fragmentations[sorted_fragmentations_dict[0][0]]
 
-CUSTOM_PROPERTY_MATCH_FUNCTIONS = {
-    "IsInRing": (
-        lambda query_atom: True if "AtomInNRings" in query_atom.DescribeQuery() or query_atom.GetIsAromatic() else False,
-        lambda atom: atom.IsInRing()
-    ),
-}
-
-calculate_from = "csvs\\smilesTest.csv"
-write_to = "group_lists\\fragmented_groups.txt"
-sort_to = "group_lists\\fragmented_groups_sorted.txt"
+print(f"Calculating from file: {calculate_from}")
+print(f"Writing unsorted solutions to file: {write_to}")
+print(f"Writing sorted solutions to file {sort_to}")
 smiles = []
 molecule_ids = []
-start_offset = 0
 
+# removed: 36580,CSCCC1c2cc(c(O)c(CS(=O)(=O)O[Na])c2O)C(CCSC)c2cc(c(O)c(CS(=O)(=O)O[Na])c2O)C(CCSC)c2cc(c(O)c(CS(=O)(=O)O[Na])c2O)C(CCSC)c2cc1c(O)c(CS(=O)(=O)O[Na])c2O
+# 9117 was skipped
 with open(calculate_from, mode='r', encoding='utf-8') as file:
     csv_reader = csv.DictReader(file)
     
@@ -207,13 +213,13 @@ print('complete algorithm 1')
 frg = fragmenter(
     fragmentation_scheme,
     algorithm='complete',
-    n_heavy_atoms_cuttoff=30,
-    function_to_choose_fragmentation=function_to_choose_fragmentation_unifac,
+    n_heavy_atoms_cuttoff=81,
+    function_to_choose_fragmentation=function_to_choose_fragmentation_margan,
     match_hydrogens=False,
     n_max_fragmentations_to_find=400,
     reject_fragmented_molecules=True,
     fragmentation_scheme_order=fragmentation_scheme_order_margan,
-    properties_to_match=["GetTotalNumHs", "GetFormalCharge"],
+    properties_to_match=properties_to_match,
     custom_property_match_functions=CUSTOM_PROPERTY_MATCH_FUNCTIONS
     )
 smiles_length = len(smiles)
@@ -235,12 +241,12 @@ for index, smi in enumerate(smiles[start_offset:]):
     if not success:
         n_noSolution += 1
     
-    if (molecule_ids[index + start_offset] == "200000" or True) and success and False:
+    if (molecule_ids[index + start_offset] == "200000") and success:
         mol = Chem.MolFromSmiles(smi)
-        img = draw_mol_with_highlights_and_legend(mol, fragmentation_matches)
+        img = draw_mol_with_highlights_and_legend(mol, fragmentation_matches, group_colors={1:(52, 138, 167), 2:(87, 103, 55), 29:(108,151,151)}, group_names=group_ids_to_names, show_aromatic_info=False)
         img.save(f'simple_example{index + 1}.png')
 
-
+# MARGAN 1:(52, 138, 167), 2:(93, 211, 158), 29:(36, 46, 51) 50: (205, 144, 80)
 print ("No Solution: ", n_noSolution)
 
 # sort_list.sort_list(write_to, sort_to)

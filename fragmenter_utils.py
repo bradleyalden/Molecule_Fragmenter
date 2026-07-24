@@ -135,13 +135,14 @@ def draw_mol_with_highlights_and_legend(
             (31, 119, 180),  # blue
             (255, 127, 14),  # orange
             (44, 160, 44),  # green
-            (214, 39, 40),  # red
             (148, 103, 189),  # purple
-            (140, 86, 75),  # brown
+            (35, 169, 173), # bright blue
+            (188, 189, 34),  # olive
             (227, 119, 194),  # pink
             (127, 127, 127),  # grey
-            (188, 189, 34),  # olive
             (23, 190, 207),  # cyan
+            (214, 39, 40),  # red
+            (140, 86, 75),  # brown
         ]
         group_color_mapping = {}
         for i, key in enumerate(group_dict.keys()):
@@ -239,7 +240,7 @@ def draw_mol_with_highlights_and_legend(
 
     margin = 10 * size_multiplier
     try:
-        font = ImageFont.truetype("arial.ttf", int(16 * size_multiplier))
+        font = ImageFont.truetype("arial.ttf", int(24 * size_multiplier))
     except IOError:
         font = ImageFont.load_default()
     title_text = "Description"
@@ -249,7 +250,7 @@ def draw_mol_with_highlights_and_legend(
     legend_draw.text((title_x, title_y), title_text, fill=(0, 0, 0, 255), font=font)
 
     current_y = title_y + title_height + margin
-    box_size = 20 * size_multiplier
+    box_size = 26 * size_multiplier
     spacing = 10 * size_multiplier
 
     for key in group_color_mapping:
