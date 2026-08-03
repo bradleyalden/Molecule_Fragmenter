@@ -1142,5 +1142,97 @@ class fragmenter:
 
         return frozenset(match) in found_matches_set
 
+    def fragment_higher_order(self, SMILES_or_molecule):
+        """
+        This method processes the molecule—converting from a SMILES string if necessary—and fragments the molecule for second/third order.
+
+        Args:
+            SMILES_or_molecule (str or Mol): The molecule to fragment, provided as a SMILES string or an RDKit Mol object.
+
+        Returns:
+            tuple: A tuple containing:
+                - fragmentation (dict): Mapping of group numbers to counts of matches found.
+                - success (bool): True if the fragmentation was successful (i.e., all atoms were assigned), False otherwise.
+                - fragmentation_matches (dict): Mapping of group numbers to lists of match tuples (atom index sequences).
+
+        Raises:
+            ValueError: If a provided SMILES string is invalid.
+        """
+
+        if isinstance(SMILES_or_molecule, str):
+            complete_mol = fragmenter.Chem.MolFromSmiles(SMILES_or_molecule)
+            complete_mol = (
+                fragmenter.Chem.AddHs(complete_mol)
+                if self.match_hydrogens
+                else complete_mol
+            )
+            is_valid_SMILES = complete_mol is not None
+
+            if not is_valid_SMILES:
+                raise ValueError("Following SMILES is not valid: " + SMILES_or_molecule)
+        else:
+            complete_mol = SMILES_or_molecule
+
+        # iterate over all separated molecules
+        success = False
+        fragmentation = {}
+        fragmentation_matches = {}
+
+        for group_num, SMARTS in self.fragmentation_scheme.items():
+            if type(SMARTS) == list:
+                SMARTS = SMARTS[0]
+            matches = complete_mol.GetSubstructMatches(self._fragmentation_scheme_pattern_lookup[SMARTS])
+            for match_locations in matches:
+                # adding an if not encompassed by prev matched group check here could be faster
+                fragmentation_matches.setdefault(group_num, []).append(match_locations)
+
+        fragmentation_matches = remove_encompassed_groups(fragmentation_matches)
+
+        for group_num, tuple_list in fragmentation_matches.items():
+            if  len(tuple_list) != 0:
+                if not group_num in fragmentation:
+                    fragmentation[group_num] = 0
+                fragmentation[group_num] += len(tuple_list)
+
+        if fragmentation:
+            success = True
+        return fragmentation, success, fragmentation_matches
+
+        # check all fragmentation_matches to see if they are encompassed by others, and if not, add them to fragmentation() and mark success as True
+
+def remove_encompassed_groups(data_dict):
+    all_group_instances = []
+    for id, tuple_list in data_dict.items():
+        for index, tuple in enumerate(tuple_list):
+            all_group_instances.append({"id": id, "index": index, "set": set(tuple), "tuple": tuple})
+
+    items_to_remove = set()
+
+    for i in range(len(all_group_instances)):
+        item_a = all_group_instances[i]
+
+        for j in range(len(all_group_instances)):
+            if i == j:
+                continue
+
+            item_b = all_group_instances[j]
+
+            if item_a["set"].issubset(item_b["set"]):
+                if len(item_a["set"]) < len(item_b["set"]):
+                    items_to_remove.add((item_a["id"], item_a["index"]))
+                elif len(item_a["set"]) == len(item_b["set"]) and i > j:
+                    items_to_remove.add((item_a["id"], item_a["index"]))
+
+    cleaned_dict = {}
+    for id, tuple_list in data_dict.items():
+        cleaned_list = [
+            t
+            for idx, t in enumerate(tuple_list)
+            if (id, idx) not in items_to_remove
+        ]
+        cleaned_dict[id] = cleaned_list
+
+    return cleaned_dict
+
 if __name__ == "__main__":
-    main()
+    print("Class is not runnable; use it from another file such as execute_fragmentation.py")

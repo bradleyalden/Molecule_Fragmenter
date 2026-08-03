@@ -223,13 +223,12 @@ frg = fragmenter(
     custom_property_match_functions=CUSTOM_PROPERTY_MATCH_FUNCTIONS
     )
 smiles_length = len(smiles)
-
+frg.fragment_higher_order("CCO")
 # ids removed because of not solving: 19929, 13894; these are back in
 # ids removed because invalid SMILES: 30784, 22893
 
 for index, smi in enumerate(smiles[start_offset:]):
-    # print(smi)
-    fragmentation, success, fragmentation_matches = frg.fragment(smi)
+    fragmentation, success, fragmentation_matches = frg.fragment_higher_order(smi)
     fragmentation_sorted = dict(sorted(fragmentation.items()))
     groups = molecule_ids[index + start_offset] + " "
     for group, number in fragmentation_sorted.items():
@@ -241,7 +240,7 @@ for index, smi in enumerate(smiles[start_offset:]):
     if not success:
         n_noSolution += 1
     
-    if (molecule_ids[index + start_offset] == "200000") and success:
+    if (molecule_ids[index + start_offset] == "200000") and success and False:
         mol = Chem.MolFromSmiles(smi)
         img = draw_mol_with_highlights_and_legend(mol, fragmentation_matches, group_colors={1:(52, 138, 167), 2:(87, 103, 55), 29:(108,151,151)}, group_names=group_ids_to_names, show_aromatic_info=False)
         img.save(f'simple_example{index + 1}.png')
